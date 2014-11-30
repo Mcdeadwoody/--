@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -13,7 +16,7 @@ import java.util.logging.Logger;
  */
 
 
-public class Main extends JavaPlugin
+public class Main extends JavaPlugin implements Listener
 {
 
 
@@ -21,6 +24,7 @@ public class Main extends JavaPlugin
     @Override
     public void onEnable()
     {
+        Bukkit.getPluginManager().registerEvents(this, this);
         for(int i=0;i<5;i++)
         {
             logger.info("Test plugin <Mcdeadwoody> starting..");
@@ -48,7 +52,14 @@ public class Main extends JavaPlugin
         return true;
     }
 
-
+    @EventHandler
+    public void playerBlockBreakEvent(BlockBreakEvent e)
+    {
+        if(!e.getPlayer().isOp())
+        {
+            e.setCancelled(true);
+        }
+    }
 
 
 
