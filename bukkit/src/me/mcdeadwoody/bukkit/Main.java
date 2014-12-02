@@ -1,24 +1,20 @@
 package me.mcdeadwoody.bukkit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import java.util.logging.Logger;
 
-/**
- * Created by Tim on 30-11-2014.
- */
-
-
 public class Main extends JavaPlugin implements Listener
 {
-
-
     Logger logger = Bukkit.getLogger();
     @Override
     public void onEnable() {
@@ -37,31 +33,26 @@ public class Main extends JavaPlugin implements Listener
         return true;
     }
 
-    // Minigame ideëen:
-
     // double jump
-    public void doubleJump(PlayerVelocityEvent event) {
-        Player p = event.getPlayer();
-        int doubleJumpCount = 0;
-
-
-
-        if(p.isFlying()) {
-            if(p.isSneaking()) {
-                if (doubleJumpCount == 0) {
-
-                    //TODO setvelocity for the next jump, reset upon touching the ground, possible XP bar state indication.
-
-                    doubleJumpCount = 1;
-                }else
-                    if(doubleJumpCount == 1){
-                    return;
+    Object jumpState = null;
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        if(e.getAction() == Action.PHYSICAL) {
+            if(e.getMaterial() == Material.AIR) {
+                if(jumpState == null) {
+                    e.getPlayer().setVelocity(new Vector(e.getPlayer().getVelocity().getBlockX(), 0.25, e.getPlayer().getVelocity().getBlockZ()));
+                    for(int i=0; i<5; i++) {
+                        e.getPlayer().sendMessage("vis");
+                    }
+                    jumpState = 1;
+                }else {
+                    e.setCancelled(true);
                 }
-
 
             }
         }
     }
+
 
 
 
