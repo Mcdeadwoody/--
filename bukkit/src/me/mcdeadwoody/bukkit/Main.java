@@ -3,6 +3,7 @@ package me.mcdeadwoody.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,20 +44,26 @@ public class Main extends JavaPlugin implements Listener
     }
 
     // double jump
+    boolean jumpState = true;
     @EventHandler
     public void onPlayerToggleFlight(PlayerToggleFlightEvent e) {
         if(e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            e.getPlayer().setFlying(false);
+            e.getPlayer().setAllowFlight(false);
             e.getPlayer().setVelocity(new Vector(e.getPlayer().getVelocity().getBlockX(), 1, e.getPlayer().getVelocity().getBlockZ()));
+            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLAZE_HIT, 1f, 1f);
             e.setCancelled(true);
+            jumpState = false;
         }
     }
-
-
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-            if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE && jumpState) {
                 e.getPlayer().setAllowFlight(true);
+            }else if(!jumpState && e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
+                jumpState = true;
             }
+
     }
 
     //extra
@@ -65,9 +72,4 @@ public class Main extends JavaPlugin implements Listener
         e.getPlayer().setGameMode(GameMode.CREATIVE);
 
     }
-
-
-
-
-
 }
