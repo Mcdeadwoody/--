@@ -42,7 +42,6 @@ public class Main extends JavaPlugin implements Listener
         }
         return true;
     }
-
     // double jump
     boolean jumpState = true;
     @EventHandler
