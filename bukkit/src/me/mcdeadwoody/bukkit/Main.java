@@ -48,7 +48,6 @@ public class Main extends JavaPlugin implements Listener
                 }else {
                     e.setCancelled(true);
                 }
-
             }
         }
     }
