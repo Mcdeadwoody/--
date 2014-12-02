@@ -1,0 +1,6 @@
+name: CCBans
+main: me.mcdeadwoody.bukkit.Main
+version: 1.0
+description: >
+             doublejump
+commands:
