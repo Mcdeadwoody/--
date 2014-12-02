@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -17,58 +18,86 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class Main extends JavaPlugin implements Listener
-{
+public class Main extends JavaPlugin implements Listener {
     Logger logger = Bukkit.getLogger();
+
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
-        for(int i=0;i<5;i++) {
+        for (int i = 0; i < 5; i++) {
             logger.info("Test plugin <Mcdeadwoody> starting..");
         }
     }
+
     @Override
     public void onDisable() {
         logger.info("Test plugin <Mcdeadwoody> shutting down..");
     }
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
-        if(label.equalsIgnoreCase("test")) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (label.equalsIgnoreCase("test")) {
             Player p = (Player) sender;
             p.sendMessage("test");
         }
         return true;
     }
+
     // double jump
-    boolean jumpState = true;
     @EventHandler
     public void onPlayerToggleFlight(PlayerToggleFlightEvent e) {
-        if(e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+        if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            e.getPlayer().setVelocity(e.getPlayer().getLocation().getDirection().multiply(1.5).setY(1));
+            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLAZE_HIT, 1f, 1f);
             e.getPlayer().setFlying(false);
             e.getPlayer().setAllowFlight(false);
-            e.getPlayer().setVelocity(new Vector(e.getPlayer().getVelocity().getBlockX(), 1, e.getPlayer().getVelocity().getBlockZ()));
-            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLAZE_HIT, 1f, 1f);
             e.setCancelled(true);
-            jumpState = false;
         }
     }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-            if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE && jumpState) {
-                e.getPlayer().setAllowFlight(true);
-            }else if(!jumpState && e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR) {
-                jumpState = true;
-            }
-
+        if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE && !e.getPlayer().isFlying()) {
+            e.getPlayer().setAllowFlight(true);
+        }
     }
 
-    //extra
+    //Knockback physics
+
+    // Nummer van knockback; Player als key?
+
+    // Een andere hashmap voor een int array die de nummers van de array pakt?
+
+    // Nieuwe hashmap voor de knockback waarde, de key is de player.
+    // Als beide entities players zijn dan telt hij één op bij de waarde van knockback bij diegene die geslagen is
+    //
+    //
+
+
+    int standardKbValue = 0;
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        e.getPlayer().setGameMode(GameMode.CREATIVE);
-
+    public void onDamage(EntityDamageByEntityEvent e) {
+        Player p = (Player) e.getEntity();
+        HashMap<Player, Object > playerKb = new HashMap<Player, Object>();
+        HashMap<Player, Integer> playerNumber = new HashMap<Player, Integer>();
+        Player[] players = Bukkit.getServer().getOnlinePlayers();
+        List<Integer> x = new ArrayList<Integer>();
+        for(int i = 0; i<= players.length; i++) {
+            x.add(1);
+        }
+        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+            for(int i = 0; i<= players.length; i++) {
+                Object[] z = x.toArray();
+                playerKb.put(players[i], z[i]);
+            }
+            int val = (Integer) playerKb.get(e.getEntity());
+            playerKb.put(p, val+1);
+        }
     }
+
+
 }
