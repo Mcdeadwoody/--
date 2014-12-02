@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,6 +57,12 @@ public class Main extends JavaPlugin implements Listener
             if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
                 e.getPlayer().setAllowFlight(true);
             }
+    }
+
+    //extra
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        e.getPlayer().setGameMode(GameMode.CREATIVE);
     }
 
 
