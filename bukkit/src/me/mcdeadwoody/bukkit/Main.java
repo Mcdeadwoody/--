@@ -78,12 +78,10 @@ public class Main extends JavaPlugin implements Listener {
     //
 
 
-    int standardKbValue = 0;
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
         Player p = (Player) e.getEntity();
         HashMap<Player, Object > playerKb = new HashMap<Player, Object>();
-        HashMap<Player, Integer> playerNumber = new HashMap<Player, Integer>();
         Player[] players = Bukkit.getServer().getOnlinePlayers();
         List<Integer> x = new ArrayList<Integer>();
         for(int i = 0; i<= players.length; i++) {
@@ -96,8 +94,8 @@ public class Main extends JavaPlugin implements Listener {
             }
             int val = (Integer) playerKb.get(e.getEntity());
             playerKb.put(p, val+1);
+
+
         }
     }
-
-
 }
