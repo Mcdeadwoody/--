@@ -9,18 +9,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Hashtable;
 import java.util.logging.Logger;
 
 public class Main extends JavaPlugin implements Listener {
@@ -61,41 +55,27 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getPlayer().getLocation().subtract(0, 1, 0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE && !e.getPlayer().isFlying()) {
+        if (e.getPlayer().getLocation().subtract(0,1,0).getBlock().getType() != Material.AIR && e.getPlayer().getGameMode() != GameMode.CREATIVE && !e.getPlayer().isFlying()) {
             e.getPlayer().setAllowFlight(true);
         }
     }
+    // knockback logic
+    Hashtable<Player, Double> Map = new Hashtable<Player,Double>();
 
-    //Knockback physics
-
-    // Nummer van knockback; Player als key?
-
-    // Een andere hashmap voor een int array die de nummers van de array pakt?
-
-    // Nieuwe hashmap voor de knockback waarde, de key is de player.
-    // Als beide entities players zijn dan telt hij één op bij de waarde van knockback bij diegene die geslagen is
-    //
-    //
-
+    public void standardKnockback(){
+        for(int i = 0; i<=Bukkit.getOnlinePlayers().length; i++) {
+            Map.put(Bukkit.getOnlinePlayers()[i], 0.0);
+        }
+    }
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e) {
+    public void onDmg(EntityDamageByEntityEvent e) {
         Player p = (Player) e.getEntity();
-        HashMap<Player, Object > playerKb = new HashMap<Player, Object>();
-        Player[] players = Bukkit.getServer().getOnlinePlayers();
-        List<Integer> x = new ArrayList<Integer>();
-        for(int i = 0; i<= players.length; i++) {
-            x.add(1);
+        if((e.getEntity() != null) && (e.getDamager() instanceof Player) && (p.isOnline())) {
+            double kbVal = Map.get(p);
+            Map.put(p, kbVal + 0.1);
+            p.setVelocity(p.getVelocity().add(p.getLocation().toVector().subtract(e.getDamager().getLocation().toVector()).normalize().multiply(Map.get(p))));
         }
-        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-            for(int i = 0; i<= players.length; i++) {
-                Object[] z = x.toArray();
-                playerKb.put(players[i], z[i]);
-            }
-            int val = (Integer) playerKb.get(e.getEntity());
-            playerKb.put(p, val+1);
-
-
-        }
+        e.setCancelled(true);
     }
 }
